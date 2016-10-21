@@ -25,11 +25,11 @@ tags:
 ## 正文
    这个博客直接使用了huxpro(黄玄)[GitHub Pages](https://github.com/Huxpro/huxpro.github.io)的模板，十分感谢。
 
-   搭建这样的一个博客，源于想熟练使用markdown————之前一直使用org文件，虽然也可以转md文件，但大多数同事只熟悉md文件，有时候修改只能基于md文件，所以只能认真学习markdown咯。
+   搭建这样的一个博客，源于想熟练使用markdown —— 之前一直使用org文件，虽然也可以转md文件，但大多数同事只熟悉md文件，有时候修改只能基于md文件，所以只能认真学习markdown咯。
 
 
 ## 后记
 
   希望自己的技术水平随着Blog的内容丰富而得到提高。
 
-  ———— seventhking 后记于 2016.10.21
+  —— seventhking 后记于 2016.10.21
