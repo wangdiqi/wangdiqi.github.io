@@ -6,7 +6,7 @@ date:       2016-10-21 09:50:00
 author:     "seventhking"
 header-img: "img/home-bg-o.jpg"
 tags:
-    - 
+    - 闲谈
 ---
 
 ## 前言
