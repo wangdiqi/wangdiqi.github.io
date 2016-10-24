@@ -13,21 +13,24 @@ tags:
 > "内容来自书本和网络"
 
 1. ngx_int_t
-   typedef intptr_t      ngx_int_t;
+
+    typedef intptr_t      ngx_int_t;
 
 2. ngx_uint_t;
-   typedef uintptr_t     ngx_uint_t;
+
+    typedef uintptr_t     ngx_uint_t;
 
 3. ngx_str_t 字符串
-   typedef struct {
-       //有效长度
-       size_t     len;
-       //字符串起始地址，并不是普通字符串，未必会以‘\0’作为结尾，必须配合len来使用
-       u_char     *data;
-   }ngx_str_t;
 
-   比较ngx_str_t字符串，应当使用ngx_strncmp(),
-   #define ngx_strncmp(s1, s2, n)  strncmp((const char *)s1, (const char *)s2, n)
+    typedef struct {
+        //有效长度
+        size_t     len;
+        //字符串起始地址，并不是普通字符串，未必会以‘\0’作为结尾，必须配合len来使用
+        u_char     *data;
+    }ngx_str_t;
+
+    比较ngx_str_t字符串，应当使用ngx_strncmp(),
+    #define ngx_strncmp(s1, s2, n)  strncmp((const char *)s1, (const char *)s2, n)
 
      4) ngx_list_t 链表
         typedef struct ngx_list_part_s ngx_list_part_t;
