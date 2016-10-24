@@ -10,7 +10,7 @@ tags:
     - 算法
 ---
 
-## 模幂运算
+### 模幂运算
 
 ~~~
 inline unsigned __int64 MulMod(unsigned __int64 a, unsigned __int64 b, unsigned __int64 n)
@@ -38,7 +38,7 @@ unsigned __int64 PowMod(unsigned __int64 base, unsigned __int64 pow, unsigned __
 }
 ~~~
 
-## 判断素数
+### 判断素数
 
 ~~~
 #include<math.h>
@@ -55,7 +55,7 @@ bool IsPrime(unsigned n)
 }
 ~~~
 
-## 最大公约数
+### 最大公约数
 
 ~~~
 
