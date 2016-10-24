@@ -17,7 +17,7 @@ tags:
 typedef intptr_t      ngx_int_t;
 ~~~
 
-### ngx_uint_t;
+### ngx_uint_t
 ~~~
 typedef uintptr_t     ngx_uint_t;
 ~~~
@@ -538,5 +538,10 @@ typedef struct {
     u_char              *end;
 } ngx_http_status_t;
 ~~~
+<br/>
+<br/>
+<br/>
+
+### 附录
 
 [^1]:深入理解Nginx模块开发与架构解析(第2版) 陶辉 著
