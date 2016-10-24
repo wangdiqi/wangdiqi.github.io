@@ -1,9 +1,9 @@
 ---
-layout:     post
-title:      "My First Blog"
-subtitle:   "This is my first blog"
-date:       2016-10-21 09:50:00
-author:     "seventhking"
+layout: post
+title: "My First Blog"
+subtitle: "This is my first blog"
+date: 2016-10-21 09:50:00
+author: "seventhking"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:
