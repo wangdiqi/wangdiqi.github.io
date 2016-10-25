@@ -538,6 +538,30 @@ typedef struct {
     u_char              *end;
 } ngx_http_status_t;
 ~~~
+
+### ngx_hash_t
+**nginx 使用的是开放寻址法**
+
+~~~
+//散列表的槽
+typedef struct {
+    //指向用户自定义元素数据的指针，如果当前ngx_hash_elt_t槽为空，则value的值为0
+    void             *value;
+    //元素关键字的长度
+    u_short           len;
+    //元素关键字的首地址
+    u_char            name[1];
+} ngx_hash_elt_t;
+
+//基本散列表
+typedef struct {
+    //指向散列表的首地址，也是第一个槽的地址
+    ngx_hash_elt_t  **buckets;
+    //散列表中槽的总数
+    ngx_uint_t        size;
+} ngx_hash_t;
+~~~
+
 <br/>
 <br/>
 <br/>
