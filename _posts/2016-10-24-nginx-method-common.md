@@ -81,7 +81,8 @@ ha -- 要初始化的ngx_hash_keys_arrays_t结构体指针
 key -- 添加元素的关键字
 value -- key关键字对应的用户数据的指针
 flags -- 取值有3种：NGX_HASH_WILDCARD_KEY表示需要处理通配符；NGX_HASH_READONLY_KEY表示关键字不可以做
-         更改(也就是不可以通过全小写关键字来获取散列码)；其他值表示既不处理通配符，又允许通过把关键字
+         更改(也就是不可以通过全小写关键字来获取散列码)；其他值表示既不处理通配符，又允许通过把关键字全小写
+         来获取散列码
 */
 ngx_int_t ngx_hash_add_key(ngx_hash_keys_arrays_t *ha, ngx_str_t *key, void *value, ngx_uint_t flags)
 
