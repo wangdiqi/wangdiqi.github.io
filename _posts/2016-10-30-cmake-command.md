@@ -10,7 +10,7 @@ tags:
     - cmake
 ---
 
-> "学会编写CMakeLists.txt,参考[^1]"
+> "学会编写CMakeLists.txt,参考[^1],最好参考原PDF，写的比较详尽，这里只是做一些记录，方便自己查阅。"
 
 ### PROJECT(projectname [CXX] [C] [Java])
 这个指令隐式的定义了两个cmake变量：\<projectname\>_BINARY_DIR 以及 \<projectname\>_SOURCE_DIR  
