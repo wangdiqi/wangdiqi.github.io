@@ -17,24 +17,33 @@ tags:
 1. location [ = \| ~ \| ~* \| ^~ ] uri {...}
    1) 概述
        a. 不含正则表达式uri称为“标准uri”，使用正则表达式的uri称为“正则uri”.
-       b. 不添加选项时，首先在server块的多个location块中搜索是否有标准uri和请求字符串匹配，如果有多个可以匹配，就记录匹配度最高的一个。
-          然后，服务器再用location块中的正则uri和请求字符串匹配，当第一个正则uri匹配成功，结束搜索，并使用这个location块处理此请求；
+       b. 不添加选项时，首先在server块的多个location块中搜索是否有标准uri
+          和请求字符串匹配，如果有多个可以匹配，就记录匹配度最高的一个。然后，
+          服务器再用location块中的正则uri和请求字符串匹配，当第一个正则uri
+          匹配成功，结束搜索，并使用这个location块处理此请求；
           如果正则匹配全部失败，就使用刚才记录的匹配度最高的location块处理此请求。
    2) 选项解释
-      a. “=”，用于标准uri前，要求请求字符串与uri严格匹配。如果已经匹配成功，就停止继续向下搜索并立即处理此请求。
+      a. “=”，用于标准uri前，要求请求字符串与uri严格匹配。如果已经匹配成功，就停止继续向下搜索
+         并立即处理此请求。
       b. “～”，用于表示uri包含正则表达式，并且区分大小写。
       c. “～*”，用于表示uri包含正则表达式，并且不区分大小写。
-      d. “^～”，用于标准uri前，要求nginx服务器找到标识uri和请求字符串匹配度最高的location后，立即使用此location处理请求，而不再使用location块中的正则uri和请求字符串做匹配
+      d. “^～”，用于标准uri前，要求nginx服务器找到标识uri和请求字符串匹配度最高的location后,
+         立即使用此location处理请求，而不再使用location块中的正则uri和请求字符串做匹配
 
 2. rewrite regex replacement [flag]
      1) 概述
-        replacement, 匹配成功后用于替换URI中被戳取内容的字符串。默认情况下，如果该字符串是由“http://”或者“https://”开头的，则不会继续向下对URI进行其他处理，而直接将重写后的URI返回给客户端
+        replacement, 匹配成功后用于替换URI中被戳取内容的字符串。默认情况下，如果该字符串是
+        由“http://”或者“https://”开头的，则不会继续向下对URI进行其他处理，而直接将重写后
+        的URI返回给客户端
 
      2) flag选项解释
-        a. last，终止继续在本location块重处理接收到的URI，并将此处重写的URI作为一个新的URI，使用各location块进行处理。该标志将重写后的URI重新在server块中执行，
-           为重写后的URI提供了转入到其他location块的机会。
-        b. break，将此处重写的URI作为一个新的URI，在本块中继续进行处理。该标志将重写后的地址在当前的location块中执行，不会将新的URI转向到其他location块。
-        c. redirect，将重写后的URI返回给客户端，状态代码为302,指明是临时重定向URI，主要用在replacement变量不是以“http://”或者"https://"开头的情况下
+        a. last，终止继续在本location块重处理接收到的URI，并将此处重写的URI作为一个新的URI，
+           使用各location块进行处理。该标志将重写后的URI重新在server块中执行，为重写后的URI
+           提供了转入到其他location块的机会。
+        b. break，将此处重写的URI作为一个新的URI，在本块中继续进行处理。该标志将重写后的地址
+           在当前的location块中执行，不会将新的URI转向到其他location块。
+        c. redirect，将重写后的URI返回给客户端，状态代码为302,指明是临时重定向URI，主要用
+           在replacement变量不是以“http://”或者"https://"开头的情况下
         d. permanent，将重写后的URI返回给客户端，状态代码为301,指明是永久重定向URI
 
 3. proxy_pass
@@ -43,14 +52,16 @@ tags:
 
 4. 缓存
      1) 概述
-        a. 基于proxy_store缓存机制，通常将proxy_store的缓存目录配置到/dev/shm中提高缓存数据的处理速度。note：只能缓存200状态下的响应数据，不支持动态链接请求，即会忽略get请求的参数
+        a. 基于proxy_store缓存机制，通常将proxy_store的缓存目录配置到/dev/shm中提高缓存
+           数据的处理速度。note：只能缓存200状态下的响应数据，不支持动态链接请求，即会忽略get请求的参数
         b. 基于memcached缓存机制
         c. proxy_cached缓存机制
         d. 基于第三方模块ncache的缓存机制
 
 5. nginx与Squid组合
      1) 概述
-        Squid Cache（简称Squid）是目前在大访问量的网站建设中应用非常广泛的Web缓存服务器。但是，Squid服务本身不支持在单台服务器同一端口下运行多个进程（列入要反向代理Web必须指定端口80）
+        Squid Cache（简称Squid）是目前在大访问量的网站建设中应用非常广泛的Web缓存服务器。
+        但是，Squid服务本身不支持在单台服务器同一端口下运行多个进程（列入要反向代理Web必须指定端口80）
 
 6. nginx服务器的邮件服务
 
@@ -68,7 +79,8 @@ tags:
           h. ngx_string.* 实现对字符串处理的基本功能
           i. ngx_times.* 实现对时间的获取和处理操作
 
-          该目录中还包含了一些重要数据结构的定义和操作，比如ngx_array.*, ngx_list.*, ngx_queue.*, ngx_hash.*, ngx_*tree.*, ngx_output_chain.*;
+          该目录中还包含了一些重要数据结构的定义和操作，比如ngx_array.*, ngx_list.*, 
+          ngx_queue.*, ngx_hash.*, ngx_*tree.*, ngx_output_chain.*;
           一些与内存管理相关的源码，比如ngx_palloc.*, ngx_shmtx.*, ngx_open_file_cache.*等
 
         * event
@@ -82,10 +94,13 @@ tags:
 
         * misc
           ngx_cpp_test_module.cpp:文件实现的功能是测试程序中引用的头文件是否与C＋＋兼容
-          ngx_google_perftools_module.c:文件用来支持Google PerfTools的使用，Google Perftools包含四个工具，用于优化内存分配的效率和速度，帮助高并发的情况下很好地控制内存的使用
+          ngx_google_perftools_module.c:文件用来支持Google PerfTools的使用，
+          Google Perftools包含四个工具，用于优化内存分配的效率和速度，帮助高并发的
+          情况下很好地控制内存的使用
 
         * os
-          默认只包含一个unix目录，其中存放的源代码是针对“类Unix系统”，如Solaris、FreeBSD等的特殊情况，进行实现
+          默认只包含一个unix目录，其中存放的源代码是针对“类Unix系统”，如Solaris、FreeBSD
+          等的特殊情况，进行实现
 
 ~~~
 
