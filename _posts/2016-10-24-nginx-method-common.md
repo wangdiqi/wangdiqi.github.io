@@ -107,6 +107,52 @@ ngx_queue_insert_after(q, x)
 
 ## ngx_array_t 动态数组
 ~~~
+/*创建1个动态数组，并预分配n个大小为size的内存空间
+INPUT:
+p -- 内存池对象
+n -- 初始分配元素的最大个数
+size -- 每一个元素所占用的内存大小
+*/
+ngx_array_create(ngx_pool_t *p, ngx_uint_t n, size_t size)
+
+/*初始化1个已经存在的动态数组，并预分配n个大小为size的内存空间
+INPUT:
+a -- 一个动态数组结构体指针
+p -- 内存池
+n -- 初始分配元素的最大个数
+size -- 每一个元素所占用的内存大小
+*/
+ngx_array_init(ngx_array_t *a, ngx_pool_t *p, ngx_uint_t n, size_t size)
+
+/*销毁已经分配的数组元素空间和ngx_array_t动态数组对象。
+注意：ngx_array_destroy最好与ngx_array_create配对使用，
+因为ngx_array_destroy同时会回收ngx_array_t结构体自身占用的内存
+INPUT:
+a -- 一个动态数组结构体指针
+*/
+ngx_array_destroy(ngx_array_t *a)
+
+/*向当前a动态数组中添加1个元素，返回的是这个新添加元素的地址。注意：如果
+动态数组已经达到容量上限，这时会自动扩容，扩容机制有两种情形：
+(1) 如果当前内存池中剩余的空间大于或者等于本次需要新增的空间，那么本次扩容
+    将只扩充新增的空间。例如，对于ngx_array_push方法来说，就是扩充1个元素，
+    而对于ngx_array_push_n方法来说，就是扩充n个元素。
+(2) 如果当前内存池中剩余的空间小于本次需要新增的空间，那么对ngx_array_push方法
+    来说，会将原先动态数组的容量扩容一倍，而对于ngx_array_push_n来说，情况更
+    复杂些，如果参数n小于原先动态数组的容量，将会扩容一倍；如果参数n大于原先动态
+    数组的容量，这时会分配2 x n大小的空间，扩容会超过一倍。（注意开辟全新内存时，
+    存在拷贝数据到新内存的过程，可能会很耗时）
+INPUT:
+a -- 一个动态数组结构体指针
+*/
+ngx_array_push(ngx_array_t *a)
+
+/*向当前a动态数组中添加n个元素，返回的是新添加这批元素中第一个元素的地址
+INPUT:
+a -- 一个动态数组结构体指针
+n -- 需要添加元素的个数
+*/
+ngx_array_push_n(ngx_array_t *a, ngx_uint_t n)
 ~~~
 
 ## ngx_list_t 单向链表
@@ -190,11 +236,91 @@ ngx_int_t ngx_hash_add_key(ngx_hash_keys_arrays_t *ha, ngx_str_t *key, void *val
 
 ~~~
 
+## ngx_pool_t 内存池
+
+*1.内存池操作*  
+  
+~~~
+/*创建内存池，注意它的size参数并不等同于可分配空间，它同时包含了管理结构的大小，这意味着：size绝不能小于sizeof(ngx_pool_t)，
+否则就会有内存越界错误。通常，可以设size为NGX_DEFAULT_POOL_SIZE，该宏目前为16KB，不用担心16KB会不够用，当第一个16KB用完时，
+会自动再分配16KB内存*/
+ngx_create_pool()
+
+/*销毁内存池，它同时会把通过该pool分配出的内存释放，而且，还会执行通过ngx_pool_cleanup_add方法添加的各类资源清理方法*/
+ngx_destroy_pool()
+
+/*重置内存池，即将内存池中的原有内存释放后继续使用。这个方法的实现是，会把大块内存释放给操作系统，而小块内存则在不释放的情况下复用*/
+ngx_reset_pool()
+~~~
+
+*2.基于内存池的分配、释放内存操作*  
+  
+~~~
+/*分配地址对齐的内存。按总线长度(例如sizeof(unsigned long))对齐地址后，可以减少CPU读取内存的次数，当然代价是有一些内存浪费*/
+ngx_palloc()
+
+/*分配内存时不进行地址对齐*/
+ngx_pnalloc()
+
+/*分配出地址对齐的内存后，再调用memset将这些内存全部清0*/
+ngx_pcalloc()
+
+/*按参数alignment进行地址对齐来分配内存。注意，这样分配出的内存不管申请的size有多小，都是不会使用小块内存池的，
+它会从进程的堆中分配内存，并挂在大块内存组成的large单链表中*/
+ngx_pmemalign()
+
+/*提前释放大块内存。它的效率不高，其实现是遍历large链表，寻找ngx_pool_large_t的alloc成员等与待释放地址，找到后
+释放内存给操作系统，将ngx_pool_large_t移出链表并删除*/
+ngx_pfree()
+~~~
+
+*3.随着内存池释放同步释放资源的操作*  
+  
+~~~
+/*添加一个需要在内存池释放时同步释放的资源。该方法会返回一个ngx_pool_cleanup_t结构体，而我们得到后需要设置
+ngx_pool_cleanup_t的handler成员为释放资源时执行的方法。ngx_pool_cleanup_add有一个参数size，当它不为0
+时，会分配size大小的内存，并将ngx_pool_cleanup_t的data成员指向该内存，这样可以利用这段内存传递参数，供
+释放资源的方法使用。当size为0时，data将为NULL*/
+ngx_pool_cleanup_add()
+
+/*在内存池释放前，如果需要提前关闭文件(当然是调用过ngx_pool_cleanup_add添加的文件，同时ngx_pool_cleanup_t
+的handler成员被设为ngx_pool_cleanup_file)，则调用该方法*/
+ngx_pool_run_cleanup_file()
+
+/*以关闭文件来释放资源的方法，可以设置到ngx_pool_cleanup_t的handler成员*/
+ngx_pool_cleanup_file()
+
+/*以删除文件来释放资源的方法，可以设置到ngx_pool_cleanup_t的handler成员*/
+ngx_pool_delete_file()
+~~~
+
+*与内存池无关的分配、释放操作*  
+  
+~~~
+/*从操作系统中分配内存*/
+ngx_alloc()
+
+/*从操作系统中分配出内存，再调用memset把内存清0*/
+ngx_calloc()
+
+/*释放内存到操作系统*/
+ngx_free()
+~~~
+
 ## 宏
 ~~~
-1. #define offsetof(type, member) (size_t)&(((type *)0)->member)
-2. #define ngx_tolower(c)      (u_char) ((c >= 'A' && c <= 'Z') ? (c | 0x20) : c)
-3. #define ngx_toupper(c)      (u_char) ((c >= 'a' && c <= 'z') ? (c & ~0x20) : c)
+1. #define offsetof(type, member)                 \
+        (size_t)&(((type *)0)->member)
+
+2. #define ngx_tolower(c)                         \
+        (u_char) ((c >= 'A' && c <= 'Z') ? (c | 0x20) : c)
+
+3. #define ngx_toupper(c)                         \
+        (u_char) ((c >= 'a' && c <= 'z') ? (c & ~0x20) : c)
+
+4.寻找最近的对齐地址
+   #define ngx_align_ptr(p, a)                    \
+(u_char *) (((uintptr_t)(p) + ((uintptr_t) a - 1)) & ~((uintptr_t) a - 1))
 ~~~
 
 <br/>

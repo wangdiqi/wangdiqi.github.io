@@ -83,6 +83,61 @@ PUT /website/blog/2?version=5&version_type=external
 响应的_version号码是5
 ~~~
 
+### 映射、分析、领域特定语言查询
+映射(Mapping):数据在每个字段中的解释说明，用于进行字段类型确认，将每个字段匹配为一种确定的  
+（string,number,boolean,date等）数据类型  
+  
+分析(Analysis):全文是如何处理的可以被搜索的，进行全文文本的分词，以建立供搜索用的反向索引  
+  
+领域特定语言查询(Query DSL):Elasticsearch使用的灵活的、强大的查询语言  
+  
+~~~
+例子，在索引中有12个tweets,只有一个包含2014-09-15，但是我们看下面查询中的total hists。
+GET /_search?q=2014 # 12 个结果
+GET /_search?q=2014-09-15 # 还是 12 个结果 !
+GET /_search?q=date:2014-09-15 # 1 一个结果
+GET /_search?q=date:2014 # 0个结果!
+~~~
+
+### 确切值(Exact values) vs 全文文本(Full text)
+
+
+### 倒排索引
+elasticsearch使用一种叫做倒排索引(inverted index)的结构来做快速的全文搜索  
+倒排索引由在文档中出现的唯一的单词列表，以及对于每个单词在文档中的位置组成
+
+### 分析和分析器
+"Set the shape to semi-transparent by calling set_trans(5)"  
+* 标准分析器：  
+  set,the,shape,to,semi,transparent,by,calling,set_trans,5  
+* 简单分析器：非单个字母的文本切分，每个词转为小写  
+  set,the,shape,to,semi,transparent,by,calling,set,trans  
+* 空格分析器：
+  Set,the,shape,to,semi-transparent,by,calling,set_trans(5)
+* 语言分析器：english分析器自带一套英语停用词库——像and或the这些与语义无关的通用词  
+  set,shape,semi,transpar,call,set_tran,5
+
+### 测试分析器
+~~~
+GET	/_analyze?analyzer=standard&text=Text to analyze
+~~~
+
+### 指定分析器，通过映射(mapping)人工设置这些字段
+elasticsearch支持以下简单字段类型：  
+  
+|类型|表示的数据类型|
+|---|------------|
+|String|string|
+|Whole number|byte, short, integer, long|
+|Floating point|float, double|
+|Boolean|boolean|
+|Date|date|
+
+当你索引一个包含新字段的文档——一个之前没有的字段——Elasticsearch将使用动态映射猜测字段类型，这类型  
+来自于JSON的基本数据类型，使用以下规则：  
+  
+
+
 
 ## 基本操作
 
@@ -121,8 +176,66 @@ PUT /company/employee/1
 ~~~
 
 ### 文档局部更新
+~~~
+局部文档参数doc，没有的字段就是新增，有的字段就是更新
+POST /website/blog/1/_update
+{
+    "doc":{
+        "tags":["testing"],
+        "views":0
+    }
+}
+~~~
+
+### 使用Groovy脚本局部更新(搜索、排序、聚合、文档更新)  
+~~~
+将view数量加1
+POST /website/blog/1/_update
+{
+    "script":"ctx._source.views+=1"
+}
+
+新增一个标签到tags数组中
+POST /website/blog/1/_update
+{
+    "script":"ctx._source.tags+=new_tag",
+    "params":{
+        "new_tag":"search"
+    }
+}
+
+根据文档内容删除文档
+POST /website/blog/1/_update
+{
+    "script":"ctx.op=ctx._source.views==count?'delete':'none'",
+    "params":{
+        "count":1
+    }
+}
+
+更新可能不存在的文档，upsert参数定义文档来使其不存在时被创建
+POST /website/pageviews/1/_update
+{
+    "script":"ctx._source.views+=1",
+    "upsert":{
+        "views":1
+    }
+}
+
+更新和冲突，retry_on_conflict指定失败重试次数
+POST /website/pageviews/1/_update?retry_on_conflict=5	<1>
+{
+    "script":"ctx._source.views+=1",
+    "upsert":{
+        "views":0
+    }
+}
+~~~
 
 ### 获取原始JSON文档
+* note:查询字符串搜索允许任意用户在索引中任何一个字段上运行潜在的慢查询语句,可能  
+  暴露私有信息甚至使你的集群瘫痪。  
+  
 ~~~
 获取原始JSON文档
 GET /company/employee/1
@@ -132,14 +245,22 @@ GET /company/employee/1?_source=title,text
 GET /company/employee/1/_source
 ~~~
 
-### 简单搜索
-~~~
-GET /company/employee/_search     //默认返回前10个结果
-~~~
-
-### 查询字符串
+### 简易搜索
 ~~~
 GET /company/employee/_search?q=last_name:Smith
+GET /company/employee/_search?q=+last_name:Smith+tweet:mary
+
+"+"前缀表示语句匹配条件必须被满足
+"-"前缀表示语句匹配条件必须不被满足
+不加前缀表示是可选的
+~~~
+
+* name字段
+* date晚于2014-09-10
+* _all字段包含"aggregations" 或 "geo"
+
+~~~
+?q=+name:(mary john)+date:>2014-09-10+(aggregations geo)
 ~~~
 
 ### DSL语句查询
@@ -234,6 +355,144 @@ GET /company/employee/_search
 HEAD /company/employee/123
 ~~~
 
+### 检索多个文档
+~~~
+POST /_mget
+{
+    "docs":[{
+        "_index"	:	"website",
+        "_type"	:		"blog",
+        "_id"	:				2
+        },
+        {
+        "_index"	:	"website",
+        "_type"	:		"pageviews",
+        "_id"	:				1,
+        "_source":	"views"
+        }
+    ]
+}
+
+若所有文档具有相同_index和_type，可以通过简单的ids数组来代替完整的docs数组
+POST /website/blog/_mget
+{
+    "ids":["2","1"]
+}
+~~~
+
+### 批量操作
+bulk API允许我们使用单一请求来实现多个文档的create、index、update、delete  
+
+~~~
+bulk请求体如下，请注意"\n",每一行的数据不能包含未被转义的换行符
+{action:{metadata}}\n
+{request body}\n
+{action:{metadata}}\n
+{request body}\n
+~~~
+
+| action | explain  |
+|--------|----------|
+| create |当文档不存在时创建|
+| index  |创建新文档或替换已有文档|
+| update |局部更新文档|
+| delete |删除一个文档|
+
+~~~
+请求体由文档的_source组成
+{"delete":{"_index":"website","_type":"blog","_id":"123"}}\n
+{"create":{"_index":"website","_type":"blog","_id":"123"}}\n
+{"title":"My first blog post"}\n
+{"index":{"_index":"website","_type":"blog"}}\n
+{"title":"My second blog post"}\n
+POST /_bulk
+{"delete":{"_index":"website","_type":"blog","_id":"123"}}\n   <1>
+{"create":{"_index":"website","_type":"blog","_id":"123"}}\n
+{"title":"My first blog post"}\n
+{"index":{"_index":"website","_type":"blog"}}\n
+{"title":"My second blog post"}\n
+{"update":{"_index":"website","_type":"blog","_id":"123","_retry_on_conflict":"5"}}\n
+{"doc":{"title":"My	updated	blog post"}}\n  <2>
+~~~
+
+### 多索引和多类别
+/_search  
+在所有索引的所有类型中搜索  
+/gb/_search  
+在索引gb的所有类型中搜索  
+/gb,us/_search  
+在索引gb和us的所有类型中搜索  
+/g*,u*/_search  
+在以g或u开头的索引的所有类型中搜索  
+/gb/user/_search  
+在索引gb的类型user中搜索  
+/gb,us/user,tweet/_search  
+在索引gb和us的类型为user和tweet中搜索  
+/_all/user,tweet/_search  
+在所有索引的user和tweet中搜索search types user and tweet in all indices  
+
+### 分页
+Elasticsearch接受from和size参数:  
+size:结果数,默认10  
+from:跳过开始的结果数,默认0  
+GET /_search?size=5  
+GET /_search?size=5&from=5  
+GET /_search?size=5&from=10  
+  
+note：应当避免深度分页！因为分布式系统存在排序问题，会导致极大的浪费，返回不可多于1000个结果的原因  
 
 
-## 
+## 内部过程
+Node1  
+Node2  
+Node3  
+  
+replication:  
+consistency:  
+timeout:  
+routing:  
+  
+### 新建、索引和删除文档
+write操作，必须在主分片上成功完成才能复制到相关的复制分片上  
+  
+1.客户端给Node1发送新建、索引或删除请求  
+2.节点使用文档的_id确定文档属于分片0.它转发请求到Node3，分片0位于这个节点上  
+3.Node3在主分片上执行请求，如果成功，它转发请求到相应的位于Node1和Node2的复制节点上。  
+当所有的复制节点报告成功，Node3报告成功返回给请求的节点(Node1)，请求的节点再报告给客户端。  
+
+### 检索文档
+read操作  
+文档能够从主分片或任意一个复制分片被检索  
+对于读请求，为了负载均衡，请求节点会为每个请求选择不同的分片——它会循环所有分片副本  
+  
+1.客户端给Node1发送GET请求  
+2.节点使用文档的_id确定文档属于分片0。分片0对应的复制分片在三个节点上都有。此时，它转发请求到Node2.  
+3.Node2返回endangered给Node1然后返回给客户端  
+
+可能的情况有，一个被索引的文档已经存在于主分片上却还没来得及同不到复制分片上。这时复制分片会报告文档未  
+杂货哦到，主分片会成功返回文档。*一旦索引请求成功返回给用户，文档则在主分片和复制分片都是可用的。*
+
+### 局部更新文档
+结合了之前提到的读和写的模式  
+  
+1.客户端给Node1发送更新请求  
+2.它转发请求到主分片所在节点Node3  
+3.Node3从主分片检索出文档，修改_source字段的JSON，然后在主分片上重建索引。如果有其他进程修改了文档，  
+它以retry_on_conflict设置的次数重复步骤3，都未成功则放弃
+4.如果Node3成功更新文档，它同时转发文档的新版本到Node1和Node2上的复制节点以重建索引。当所有复制节点  
+报告成功，Node3返回成功给请求节点，然后返回给客户端
+
+### 多文档模式
+mget和bulk API与单独的文档类似。差别是请求节点知道每个文档所在的分片，它把多文档请求拆成每个分片的对  
+文档请求，然后转发每个参与的节点。  
+  
+1.客户端向Node1发送mget请求  
+2.Node1为每个分片构建一个多条数据检索请求,然后转发到这些请求所需的主分片或复  
+制分片上。当所有回复被接收,Node1构建响应并返回给客户端。  
+  
+下面我们将罗列使用一个bulk执行多个create、index、delete和update请求的顺序步骤:  
+1.客户端向Node1发送bulk请求。  
+2.Node1为每个分片构建批量请求,然后转发到这些请求所需的主分片上。  
+3.主分片一个接一个的按序执行操作。当一个操作执行完,主分片转发新文档(或者删除  
+部分)给对应的复制节点,然后执行下一个操作。一旦所有复制节点报告所有操作已成  
+功完成,节点就报告success给请求节点,后者(请求节点)整理响应并返回给客户端。  

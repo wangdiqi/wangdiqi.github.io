@@ -45,6 +45,63 @@ typedef struct {
 } ngx_table_elt_t;                //key-value 键值对
 ~~~
 
+## ngx_pool_t 内存池
+
+~~~
+typedef struct ngx_pool_s {
+    /*描述小块内存池。当分配小块内存时，剩余的预分配空间不足时，会再分配1个ngx_pool_t，
+    它们会通过d中的next成员构成单链表*/
+    ngx_pool_data_t d;
+    /*评估申请内存属于小块还是大块的标准*/
+    size_t max;
+    /*多个小块内存池构成链表时，current指向分配内存时遍历的第1个小块内存池*/
+    ngx_pool_t *current;
+    /*用于ngx_output_chain，与内存池关系不打，略过*/
+    ngx_chain_t *chain;
+    /*大块内存都直接从进程的堆中分配，为了能够在销毁内存池时同时释放大块内存，就把每一次
+    分配的大块内存通过ngx_pool_large_t组成单链表挂在large成员上*/
+    ngx_pool_large_t *large;
+    /*所有待清理资源(例如需要关闭或者删除的文件)以ngx_pool_cleanup_t对象构成单链表，
+    挂在cleanup成员上*/
+    ngx_pool_cleanup_t *cleanup;
+    /*内存池执行中输出日志的对象*/
+    ngx_log_t *log;
+} ngx_pool_t;
+
+typedef struct ngx_pool_large_s {
+    /*所有大块内存通过next指针连在一起*/
+    ngx_pool_large_t *next;
+    /*alloc指向ngx_alloc分配出的大块内存。调用ngx_pfree后alloc可能时NULL*/
+    void *alloc;
+} ngx_pool_large_t;
+
+typedef struct ngx_pool_data_s {
+    /*指向未分配的空闲内存的首地址*/
+    u_char *last;
+    /*n指向当前小块内存池的尾部*/
+    u_char *end;
+    /*同属于1个pool的多个小块内存池间，通过next相连*/
+    ngx_pool_t *next;
+    /*每当剩余空间不足以分配出小块内存时，failed成员就会加1。failed成员大于4后(nginx1.4.4版本)，
+    ngx_pool_t的current将移向下一个小块内存池*/
+    ngx_uint_t failed;
+} ngx_pool_data_t;
+
+typedef void (*ngx_pool_cleanup_pt)(void *data);
+
+typedef struct ngx_pool_cleanup_s {
+    /*handler初始为NULL，需要设置为清理方法*/
+    ngx_pool_cleanup_pt handler;
+    /*ngx_pool_cleanup_add方法的size>0时data不为NULL，此时可改写data指向的内存，用于为handler指向
+    的方法传递必要的参数*/
+    void *data;
+    /*由ngx_pool_cleanup_add方法设置next成员，用于将当前ngx_pool_cleanup_t添加到ngx_pool_t的cleanup
+    链表中*/
+    ngx_pool_cleanup_t *next;
+} ngx_pool_cleanup_t;
+
+~~~
+
 ## ngx_queue_t 双向链表
 *不适合超大规模数据排序*
 基础顺序容器，相对于其他顺序容器，优势在于实现了排序功能，不负责内存分配，支持两个链表间合并
@@ -60,6 +117,20 @@ struct ngx_queue_s {
 
 ## ngx_array_t 动态数组
 ~~~
+typedef struct ngx_array_s ngx_array_t;
+
+struct ngx_array_s {
+    //elts指向数组的首地址
+    void *elts;
+    //nelts是数组中已经使用的元素个数
+    ngx_uint_t nelts;
+    //每个数组元素占用的内存大小
+    size_t size;
+    //当前数组中能够容纳元素个数的总大小
+    ngx_uint_t nalloc;
+    //内存池对象
+    ngx_pool_t *pool;
+};
 ~~~
 
 ## ngx_list_t 单向链表
