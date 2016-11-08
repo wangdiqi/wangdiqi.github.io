@@ -136,6 +136,13 @@ elasticsearch支持以下简单字段类型：
 当你索引一个包含新字段的文档——一个之前没有的字段——Elasticsearch将使用动态映射猜测字段类型，这类型  
 来自于JSON的基本数据类型，使用以下规则：  
   
+|JSON type|Field type|
+|---------|----------|
+|Boolean:true or false|"boolean"|
+|Whole number:123|"long"|
+|Floationg point:123.45|"double"|
+|String,valid date:"2014-09-15"|"date"|
+|String:"foo bar"|"string"|
 
 
 
