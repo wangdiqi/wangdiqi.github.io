@@ -144,6 +144,34 @@ elasticsearch支持以下简单字段类型：
 |String,valid date:"2014-09-15"|"date"|
 |String:"foo bar"|"string"|
 
+### index 参数
+|值|解释|
+|-|---|
+|analyzed|首先分析这个字符串，然后索引。换言之，以全文形式索引此字段|
+|not_analyzed|索引这个字段，使之可以被搜索，但是索引内容和指定值一样。不分析此字段|
+|no|不索引这个字段。这个字段不能被搜索到|
+
+string类型字段默认值是analyzed
+
+~~~
+{
+    "tag":{
+        "type":"string"
+        "index":"not_analyzed"
+    }
+}
+~~~
+
+### 指定分析器
+
+~~~
+{
+    "tweet":{
+        "type":"string",
+        "analyzer":"english"
+    }
+}
+~~~
 
 
 ## 基本操作
