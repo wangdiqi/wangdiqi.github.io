@@ -169,6 +169,7 @@ void *ngx_list_push(ngx_list_t *list);
 
 ## ngx_rbtree_t 红黑树
 ~~~
+
 ~~~
 
 ## ngx_radix_tree_t 基数树

@@ -310,17 +310,21 @@ ngx_free()
 ## 宏
 ~~~
 1. #define offsetof(type, member)                 \
-        (size_t)&(((type *)0)->member)
+       (size_t)&(((type *)0)->member)
 
 2. #define ngx_tolower(c)                         \
-        (u_char) ((c >= 'A' && c <= 'Z') ? (c | 0x20) : c)
+       (u_char) ((c >= 'A' && c <= 'Z') ? (c | 0x20) : c)
 
 3. #define ngx_toupper(c)                         \
-        (u_char) ((c >= 'a' && c <= 'z') ? (c & ~0x20) : c)
+       (u_char) ((c >= 'a' && c <= 'z') ? (c & ~0x20) : c)
 
-4.寻找最近的对齐地址
+4. 寻找最近的对齐地址
    #define ngx_align_ptr(p, a)                    \
-(u_char *) (((uintptr_t)(p) + ((uintptr_t) a - 1)) & ~((uintptr_t) a - 1))
+       (u_char *) (((uintptr_t)(p) + ((uintptr_t) a - 1)) & ~((uintptr_t) a - 1))
+
+5. 查询双向链表数据地址
+   #define ngx_queue_data(q, type, link) \
+       (type *)((u_char *) q - offsetof(type, link))
 ~~~
 
 <br/>
