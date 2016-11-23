@@ -157,14 +157,34 @@ ngx_array_push_n(ngx_array_t *a, ngx_uint_t n)
 
 ## ngx_list_t 单向链表
 ~~~
+ngx_list_t *ngx_list_create(ngx_pool_t *pool, ngx_uint_t n, size_t size);
+
+void *ngx_list_push(ngx_list_t *list);
 ~~~
 
 ## ngx_rbtree_t 红黑树
 ~~~
+#define ngx_rbt_black(node)             ((node)->color = 0)
+
+#define ngx_rbtree_sentinel_init(node)  ngx_rbt_black(node)
+
+#define ngx_rbtree_init(tree, s, i)                                           \
+    ngx_rbtree_sentinel_init(s);                                              \
+    (tree)->root = s;                                                         \
+    (tree)->sentinel = s;                                                     \
+    (tree)->insert = i
+
+void ngx_rbtree_insert(ngx_rbtree_t *tree, ngx_rbtree_node_t *node);
+
+void ngx_rbtree_delete(ngx_rbtree_t *tree, ngx_rbtree_node_t *node);
+
+static ngx_inline ngx_rbtree_node_t *
+ngx_rbtree_min(ngx_rbtree_node_t *node, ngx_rbtree_node_t *sentinel)
 ~~~
 
 ## ngx_radix_tree_t 基数树
 ~~~
+
 ~~~
 
 ## hash
