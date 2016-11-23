@@ -194,6 +194,10 @@ typedef void (*ngx_rbtree_insert_pt) (ngx_rbtree_node_t *root, ngx_rbtree_node_t
                                       ngx_rbtree_node_t *sentinel);
 
 
+typedef struct {
+    ngx_rbtree_node_t node;
+    ngx_str_t str;
+} ngx_str_node_t;
 
 struct ngx_rbtree_s {
     /*指向树的根结点。注意，根节点也是数据元素*/
