@@ -184,6 +184,15 @@ ngx_rbtree_min(ngx_rbtree_node_t *node, ngx_rbtree_node_t *sentinel)
 
 ## ngx_radix_tree_t 基数树
 ~~~
+ngx_radix_tree_t *ngx_radix_tree_create(ngx_pool_t *pool,
+    ngx_int_t preallocate);
+
+ngx_int_t ngx_radix32tree_insert(ngx_radix_tree_t *tree,
+    uint32_t key, uint32_t mask, uintptr_t value);
+    
+ngx_int_t ngx_radix32tree_delete(ngx_radix_tree_t *tree,
+    uint32_t key, uint32_t mask);
+uintptr_t ngx_radix32tree_find(ngx_radix_tree_t *tree, uint32_t key);
 
 ~~~
 
