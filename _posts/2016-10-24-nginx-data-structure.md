@@ -800,6 +800,175 @@ typedef struct {
 } ngx_http_status_t;
 ~~~
 
+## ngx_listening_t
+~~~
+typedef struct {
+    //socket套接字句柄
+    ngx_socket_t fd;
+    //监听sockaddr地址
+    struct sockaddr *sockaddr;
+    //sockaddr地址长度
+    socklen_t socklen;
+    //存储IP地址的字符串addr_text最大长度，即它指定了addr_text所分配的内存大小
+    size_t addr_text_max_len;
+    //以字符串形式存储IP地址
+    ngx_str_t addr_text;
+    //套接字类型。例如，当type是SOCK_STREAM时，表示TCP
+    int type;
+    //TCP实现监听时的backlog队列，它表示允许正在通过三次握手建立TCP连接但还没有任何进程开始处理的连接最大个数
+    int backlog;
+    //内核中对于这个套接字的接收缓冲区大小
+    int rcvbuf;
+    //内核中对于这个套接字发送缓冲区大小
+    int sndbuf;
+    
+    //当新的TCP连接成功建立后的处理方法
+    ngx_connection_handler_pt handler;
+    
+    /*实际上框架并不使用servers指针，它更多是作为一个保留指针，目前主要用于HTTP或者mail等模块，用于保存当前监听端口对应着的所有主机名*/
+    void *servers;
+    //log和logp都是可用的日志对象的指针
+    ngx_log_t log;
+    ngx_log_t *logp;
+    
+    //如果为新的TCP连接创建内存池，则内存池的初始大小应该是pool_size
+    size_t pool_size;
+    /*TCP_DEFER_ACCEPT选项将在建立TCP连接成功且接收到用户的请求数据后，才向对监听套接字感兴趣的进程发送事件通知，而连接建立成功后，如果
+    post_accept_timeout秒后仍然没有收到的用户数据，则内核直接丢弃连接*/
+    ngx_msec_t post_accept_timeout;
+    
+    //前一个ngx_listening_t结构，多个ngx_listening_t结构体之间由previous指针组成单链表
+    ngx_listening_t *previous;
+    //当前监听句柄对应着的ngx_connection_t结构体
+    ngx_connection_t *connection;
+    
+    //标志位，为1则表示在当前监听句柄有效，且执行ngx_init_cycle时不关闭监听端口，位0时则正常关闭。该标志位框架代码会自动设置
+    unsigned open:1;
+    /*标志位，为1表示使用已有的ngx_cycle_t来初始化新的ngx_cycle_t结构体时，不关闭原先打开的监听端口，这对运行中升级程序很有用，
+    remain为0时，表示正常关闭曾经打开的监听端口。该标志位框架代码会自动设置，参见nginx_init_cycle方法*/
+    unsigned remain:1;
+    //标志位，为1时表示跳过设置当前ngx_listening_t结构体中的套接字，为0时正常初始化套接字。该标志位框架代码会自动设置
+    unsigned ignore:1;
+    //标志位，表示是否已经绑定。实际上目前该标志位没有使用
+    unsigned bound:1;
+    //表示当前监听句柄是否来自前一个进程(如升级Nginx程序)，如果为1，则表示来自前一个进程。一般会保留之前已经设置好的套接字，不做改变
+    unsigned inherited:1;
+    //目前未使用
+    unsigned nonblocking_accept:1;
+    //标志位，为1时表示当前结构体对应的套接字已经监听
+    unsigned listen:1;
+    //标志套接字是否阻塞，目前该标志位没有意义
+    unsigned nonblocking:1;
+    //目前该标志位没有意义
+    unsigned shared:1;
+    //标志位，为1时表示Nginx会将网络地址变为字符串形式的地址
+    unsigned addr_ntop:1;
+} ngx_listening_t;
+~~~
+
+## ngx_cycle_t
+~~~
+typedef struct{
+    /*保存着所有模块存储配置项的结构体的指针，它首先是一个数组，每个数组成员又是一个指针，这个指针指向另一个存储着指针的数组，因此会看到void**** */
+    void ****conf_ctx;
+    /*内存池*/
+    ngx_pool_t *pool;
+    
+    /*日志模块中提供了生成基本ngx_log_t日志对象的功能，这里的log实际上是在还没有执行ngx_init_cycle方法前，也就是还没有解析配置前，如果有信息需要
+    输出到日志，就会暂时使用log对象，它会输出到屏幕。在nginx_init_cycle方法执行后，将会根据nginx.conf配置文件中的配置项，构造出正确的日志文件
+    ，此时会对log重新赋值*/
+    ngx_log_t *log;
+    /*由nginx.conf配置文件读取到日志文件路径后，将开始初始化error_log日志文件，由于log对象还在用于输出日志到屏幕，这时会用new_log对象暂时性地替代log日志，
+    待初始化成功后，会用new_log的地址覆盖上面的log指针*/
+    ngx_log_t new_log;
+    
+    /*与下面的files成员配合使用，指出files数组里的元素的总数*/
+    ngx_uint_t files_n;
+    /*对于poll、rtsig这样的事件模块，会以有效文件句柄数来预先建立这些ngx_connection_t结构体，以加速事件的收集、分发。这时files就会保存所有ngx_connection_t
+    的指针组成的数组，files_n就是指针的总数，而文件句柄的值用来访问files数组成员*/
+    ngx_connection_t **files;
+    
+    /*可用连接池，与free_connection_n配合使用*/
+    ngx_connection_t *free_connections;
+    /*可用连接池中连接的总数*/
+    ngx_uint_t free_connection_n;
+    
+    /*双向链表容器，元素类型是ngx_connection_t结构体，表示可重复使用连接队列*/
+    ngx_queue_t reusable_connections_queue;
+    
+    /*动态数组，每个数组元素存储着ngx_listening_t成员，表示监听端口及相关的参数*/
+    ngx_array_t listening;
+    
+    /*动态数组容器，它保存着nginx所有要操作的目录。如果有目录不存在，则会试图创建，而创建目录失败则将会导致nginx启动失败。例如，上传文件的临时目录
+    也在pathes中，如果没有权限创建，则会导致nginx无法启动*/
+    ngx_array_t pathes;
+    
+    /*单链表容器，元素类型是ngx_open_file_t结构体，它表示nginx已经打开的所有文件。事实上，nginx框架不会向open_files链表中添加文件，而是由对此感兴趣
+    的模块向其中添加文件路径名，nginx框架会在ngx_init_cycle方法中打开这些文件*/
+    ngx_list_t open_files;
+    
+    /*单链表容器，元素的类型是ngx_shm_zone_t结构体，每个元素表示一块共享内存*/
+    ngx_list_t shared_memory;
+    
+    /*当前进程中所有连接对象的总数，与下面的connections成员配合使用*/
+    ngx_uint_t connection_n;
+    /*指向当前进程中的所有连接对象，与connection_n配合使用*/
+    ngx_connection_t *connections;
+    
+    /*指向当前进程中的所有读事件对象，connection_n同时表示所有读事件的总数*/
+    ngx_event_t *read_events;
+    /*指向当前进程中的所有写事件对象，connection_n同时表示所有写事件的总数*/
+    ngx_event_t *write_events;
+    
+    /*旧的ngx_cycle_t对象用于引用上一个ngx_cycle_t对象中的成员。例如ngx_init_cycle方法，在启动初期，需要建立一个临时的ngx_cycle_t对象保存一些
+    变量，再调用ngx_init_cycle方法时就可以把旧的ngx_cycle_t对象传进去，而这时old_cycle对象就会保存这个前期的ngx_cycle_t对象*/
+    ngx_cycle_t *old_cycle;
+    
+    /*配置文件相对于安装目录的路径名称*/
+    ngx_str_t conf_file;
+    /*nginx处理配置文件时需要特殊处理的再命令行携带的参数，一般是-g选项携带的参数*/
+    ngx_str_t conf_param;
+    /*nginx配置文件所在目录的路径*/
+    ngx_str_t conf_prefix;
+    /*nginx安装目录的路径*/
+    ngx_str_t prefix;
+    /*用于进程间同步的文件锁名称*/
+    ngx_str_t lock_file;
+    /*使用gethostname系统调用得到的主机名*/
+    ngx_str_t hostname;
+} ngx_cycle_t;
+~~~
+
+## ngx_process_t
+~~~
+typedef struct {
+    /*进程ID*/
+    ngx_pid_t pid;
+    /*waitpid系统调用获取到的进程状态*/
+    int status;
+    /*这是由socketpair系统调用产生出的用于进程间通信的socket句柄，这一对socket句柄可以互相通信，目前用于master父进程与worker子进程间的通信*/
+    ngx_socket_t channel[2];
+    /*子进程的循环执行方法，当父进程调用ngx_spwan_process生成子进程时使用*/
+    ngx_spawn_proc_pt proc;
+    /*上面的ngx_spawn_proc_pt方法中第2个参数需要传递1个指针，它是可选的。例如worker子进程就不需要，而cache manage进程就需要ngx_cache_manager_ctx
+    上下文成员。这时，data一般与ngx_spwan_proc_pt方法中第2个参数是等价的*/
+    void *data;
+    /*进程名*/
+    char *name;
+    
+    /*标志位，为1时表示在重新生成子进程*/
+    unsigned respawn:1;
+    /*标志位，为1时表示正在生成子进程*/
+    unsigned just_spawn:1;
+    /*标志位，为1时表示在进行父、子进程分离*/
+    unsigned detached:1;
+    /*标志位，为1时表示进程正在退出*/
+    unsigned exiting:1;
+    /*标志位，为1时表示进程已经退出*/
+    unsigned exited:1;
+} ngx_process_t;
+~~~
+
 <br/>
 <br/>
 <br/>
