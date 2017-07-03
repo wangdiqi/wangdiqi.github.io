@@ -482,6 +482,19 @@ RTP的一个姊妹协议，处理反馈、同步和用户接口等，但不传�
 631                    IPP                            打印共享
 ~~~
 
+TCP连接管理模型  
+~~~
+状态                   描述
 
-#### 
-        print("1")
+CLOSED                 没有活跃的连接或者挂起
+LISTEN                 服务器等待入境呼叫
+SYN RCVD               到达一个连接请求；等待ACK
+SYN SEND               应用已经启动了打开一个连接
+ESTABLISHED            正常的数据传送状态
+FIN WAIT1              应用没有数据要发送可
+FIN WAIT2              另一端同意释放连接
+TIME WAIT              等待所有数据包寿终正寝
+CLOSING                两端同时试图关闭连接
+CLOSE WAIT             另一端已经发起关闭连接
+LAST ACK               等待所有数据包寿终正寝
+~~~
