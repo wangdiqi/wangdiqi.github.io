@@ -115,3 +115,45 @@ Preliminary: | MT-Safe | AS-Safe | AC-Safe | See POSIX Safety Concepts.
 This function converts the uint32_t integer netlong from network byte order to host byte order.
 
 This is used for IPv4 Internet addresses.
+
+## 协议族及其地址值
+PF_UNIX
+PF_INET
+PF_INET6
+
+## 
+
+## 常用数据结构
+struct sockaddr_in;
+
+struct in_addr;
+
+struct sockaddr_in6;
+
+struct in6_addr;
+
+## 常用函数
+
+### pip
+
+### dup/dup2
+### readv/writev
+### sendfile
+### mmap
+### munmap
+### splice   文件描述符
+### tee      管道
+### fcntl
+### syslog系列
+### UID、EUID、GID和EGID
+
+## 常用工具
+
+### tcpdump
+### lsof
+### nc
+### strace
+### netstat
+### vmstat
+### ifstat
+### mpstat
