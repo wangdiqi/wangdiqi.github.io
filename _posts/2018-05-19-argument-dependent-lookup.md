@@ -115,10 +115,14 @@ int main(int argc, char **argv)
 
 ~~~
 namespace std{
-    maybeInOneFunction()
+    maybeInOneFunction(...)
     {
-        std::pair<int, long> pairValue;
-        std::out << pairValue;
+      // ... do somethings
+
+      std::pair<int, long> pairValue;
+      std::out << pairValue;
+
+      // ... do somethings
     }
 }
 ~~~
