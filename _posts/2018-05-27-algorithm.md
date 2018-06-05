@@ -166,3 +166,8 @@ else y = TREE-MINIMUM(z,right)
   y.left = z.left
   y.left.p = y
 ~~~
+
+
+## 红黑树
+
+红黑树是一颗二叉搜索树，
