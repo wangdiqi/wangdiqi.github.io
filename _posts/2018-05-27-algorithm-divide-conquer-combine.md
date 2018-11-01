@@ -3,7 +3,7 @@ layout: post
 title: "分治策略"
 subtitle: "分治策略"
 date: 2018-05-27 17:50:00
-author: "seventhking"
+author: "seventh"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:

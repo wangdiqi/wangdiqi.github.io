@@ -3,7 +3,7 @@ layout: post
 title: "Argument-dependent lookup(ADL, or Koenig lookup)"
 subtitle: "C++"
 date: 2018-05-19 23:05:00
-author: "seventhking"
+author: "seventh"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:

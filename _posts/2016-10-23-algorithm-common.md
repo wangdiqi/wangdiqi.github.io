@@ -3,7 +3,7 @@ layout:     post
 title:      "常用算法"
 subtitle:   "简短的常用算法"
 date:       2016-10-23 21:49:00
-author:     "seventhking"
+author:     "seventh"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:

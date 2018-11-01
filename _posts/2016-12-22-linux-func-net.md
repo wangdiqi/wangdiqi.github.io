@@ -3,7 +3,7 @@ layout: post
 title: "Linux 网络编程常用函数"
 subtitle: "网络编程常用函数"
 date: 2016-12-22 09:50:00
-author: "seventhking"
+author: "seventh"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:

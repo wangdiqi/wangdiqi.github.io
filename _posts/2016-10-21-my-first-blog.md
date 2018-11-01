@@ -3,7 +3,7 @@ layout: post
 title: "My First Blog"
 subtitle: "This is my first blog"
 date: 2016-10-21 09:50:00
-author: "seventhking"
+author: "seventh"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:
@@ -36,4 +36,4 @@ tags:
 
   希望自己的技术水平随着Blog的内容丰富而得到提高。
 
-  —— seventhking 后记于 2016.10.21
+  —— seventh 后记于 2016.10.21

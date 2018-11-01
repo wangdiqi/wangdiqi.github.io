@@ -3,7 +3,7 @@ layout: post
 title: "数学公式"
 subtitle: "基本算法使用到的数学公式"
 date: 2016-10-22 12:00:00
-author: "seventhking"
+author: "seventh"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:
