@@ -15,15 +15,27 @@ tags:
 ## 基本概要
 
 ### nginx的11个阶段
-1.rewrite:(set, set_unescape_uri),主要做一些对URI、URL参数的改写，创建并初始化一系列后续处理阶段  
-可能需要的nginx变量。
-2.access:(allow, deny, ngx_auth_request),主要执行访问控制性质的任务，比如检查用户的访问权限，  
-检查用户的来源IP地址是否合法。
-3.content:(echo),1个location只能有一个“内容处理程序”
+1.post-read:(ngx_realip), nginx读取并解析完请求头(request headers)之后就立即开始运行。  
+支持nginx模块注册处理程序
+2.server-rewrite:(ngx_rewrite配置在server配置块中时)。支持nginx模块注册处理程序  
+3.find-config:由nginx核心来完成当前请求与location配置块之间的配对工作。不支持nginx模块注册处理程序  
+4.rewrite:(set, set_unescape_uri),主要做一些对URI、URL参数的改写，创建并初始化一系列后续处理阶段  
+可能需要的nginx变量。支持nginx模块注册处理程序  
+5.post-rewrite:由nginx核心完成rewrite阶段所要求的“内部跳转”操作(如果rewrite阶段有此要求的话)。  
+不支持nginx模块注册处理程序  
+6.preaccess:(ngx_limit_req, ngx_limit_zone)。支持nginx模块注册处理程序  
+7.access:(allow, deny, ngx_auth_request, ngx_access, ngx_auth_request, access_by_lua),主要执行  
+访问控制性质的任务，比如检查用户的访问权限，检查用户的来源IP地址是否合法。支持nginx模块注册处理程序  
+8.post-access:由nginx核心完成一些处理工作，主要用于配合access阶段实现标准ngx_http_core模块  
+提供的配置指令satisfy的功能。不支持nginx模块注册处理程序  
+9.try-files:专门用于实现标准配置指令try_files的功能(在许多FastCGI应用的配置中用到)。不支持nginx模块注册处理程序  
+10.content:(echo),1个location只能有一个“内容处理程序”。支持nginx模块注册处理程序  
+11.log:主要的目的就是记录访问日志，进入该阶段表明该请求的响应已经发送到系统发送缓冲区  
+支持nginx模块注册处理程序
 
 ### 注意点
 1.ngx_echo， ngx_lua，以及 ngx_srcache 在内的许多第三方模块都选择了禁用父子请求间的变量共享  
-2.并非所有的内建变量都作用于当前请求，少数内建变量只作用于主请求，比如说：$request_method
+2.并非所有的内建变量都作用于当前请求，少数内建变量只作用于主请求，比如说：$request_method  
 
 a.使用echo_location做子请求，自定义和内置变量不可访问  
 b.使用echo_exec做跳转，内置变量不可访问，自定义变量可访问  
