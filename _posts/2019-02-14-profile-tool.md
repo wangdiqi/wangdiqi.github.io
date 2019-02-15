@@ -20,43 +20,49 @@ netstat -np[a,u,p,l,e]
 ~~~
 
 ## ss(替代netstat)
-一般无需root权限，若想列出所有连接状态，可能需要root  
-查看socket信息，连接状态，端口，pid等  
+1. 一般无需root权限，若想列出所有连接状态，可能需要root  
+2. 查看socket信息，连接状态，端口，pid等  
 ~~~
 ss -nt state establish dport = 8080 or sport = 8080
 ~~~
 
 ## top
-一般无需root权限  
-查看cpu、内存利用率  
+1. 一般无需root权限  
+2. 查看cpu利用率  
+3. 查看内存利用率  
 ~~~
 top -d 1   //检查CPU，LOAD， 进程CPU占比，内存消耗，user cpu，sys cpu， idle cpu
 ~~~
 
 ## iostat
+1. 一般无需root权限
+2. 查看cpu利用率
+3. 查看设备利用率
 ~~~
 iostat -d -x 1 // 检查IO情况，吞吐量，IOPS
 ~~~
 
 ## vmstat
-一般无需root权限  
-查看running和block进程数量  
-内存信息  
-磁盘读写信息  
+1. 一般无需root权限  
+2. 查看running和block进程数量  
+3. 内存信息  
+4. 磁盘读写信息  
 ~~~
 vmstat -1   //检查running 进程，block进程，cache 内存等等
 ~~~
 
 ## iftop
-需要root权限  
-可以查出哪条连接占用带宽，ifstat不具备
+1. 需要root权限  
+2. 查看设备带宽信息
+3. 可查看具体连接的带宽使用量，ifstat不具备
 ~~~
 iftop -nNP   // 检查网络吞吐，带宽
 ~~~
 
 ## ifstat
-按设备网卡查看流量
-只能看带宽总和
+1. 一般无需root权限
+2. 按设备网卡查看流量
+3. 只能看带宽总和
 
 ## nethogs
 按进程查看流量占用
