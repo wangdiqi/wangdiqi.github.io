@@ -143,6 +143,7 @@ vmstat 1   //检查running 进程，block进程，cache 内存等等
 ## /proc 目录
 
 #### perf
+可以追踪硬件
 
 #### systemtap
 其原理跟ftrace不同，其基本原理为：在运行systemTap脚本时，动态解析内核，将指定探测点处的代码，替换为int 3指令，实现陷入，在陷入后实现相关信息的探测，探测完成后，int 3返回到原有的执行流程中执行。
