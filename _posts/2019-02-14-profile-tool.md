@@ -129,6 +129,9 @@ iostat -d -x 1 // 检查IO情况，吞吐量，IOPS
 vmstat 1   //检查running 进程，block进程，cache 内存等等
 ~~~
 
+#### pmap
+pmap -d pid
+
 ## 程序性能分析
 
 #### strace 内核态
@@ -170,6 +173,65 @@ CPU is low, then you should sample an off-CPU flamegraph to analyze (using perf 
 
 #### datamash
 1. 计算均值和方差
+
+
+## linux memory type
+   Linux Memory Types
+       For  our  purposes  there  are  three types of memory, and one is optional.  First is
+       physical memory, a limited resource where code and data must reside when executed  or
+       referenced.   Next  is  the  optional swap file, where modified (dirty) memory can be
+       saved and later retrieved if too many demands are made on physical memory.  Lastly we
+       have virtual memory, a nearly unlimited resource serving the following goals:
+
+          1. abstraction, free from physical memory addresses/limits
+          2. isolation, every process in a separate address space
+          3. sharing, a single mapping can serve multiple needs
+          4. flexibility, assign a virtual address to a file
+
+       Regardless  of  which of these forms memory may take, all are managed as pages (typi‐
+       cally 4096 bytes) but expressed by default in top as KiB (kibibyte).  The memory dis‐
+       cussed  under  topic  `2c. MEMORY Usage' deals with physical memory and the swap file
+       for the system as a whole.  The memory reviewed in topic `3. FIELDS  /  Columns  Dis‐
+       play' embraces all three memory types, but for individual processes.
+
+       For  each such process, every memory page is restricted to a single quadrant from the
+       table below.  Both physical memory and virtual memory can include any  of  the  four,
+       while  the  swap  file  only includes #1 through #3.  The memory in quadrant #4, when
+       modified, acts as its own dedicated swap file.
+
+                                     Private | Shared
+                                 1           |          2
+            Anonymous  . stack               |
+                       . malloc()            |
+                       . brk()/sbrk()        | . POSIX shm*
+                       . mmap(PRIVATE, ANON) | . mmap(SHARED, ANON)
+                      -----------------------+----------------------
+                       . mmap(PRIVATE, fd)   | . mmap(SHARED, fd)
+          File-backed  . pgms/shared libs    |
+                                 3           |          4
+
+       The following may help in interpreting process level memory values displayed as scal‐
+       able columns and discussed under topic `3a. DESCRIPTIONS of Fields'.
+
+          %MEM - simply RES divided by total physical memory
+          CODE - the `pgms' portion of quadrant 3
+          DATA - the entire quadrant 1 portion of VIRT plus all
+                 explicit mmap file-backed pages of quadrant 3
+          RES  - anything occupying physical memory which, beginning with
+                 Linux-4.5, is the sum of the following three fields:
+                 RSan - quadrant 1 pages, which include any
+                        former quadrant 3 pages if modified
+                 RSfd - quadrant 3 and quadrant 4 pages
+                 RSsh - quadrant 2 pages
+          RSlk - subset of RES which cannot be swapped out (any quadrant)
+          SHR  - subset of RES (excludes 1, includes all 2 & 4, some 3)
+          SWAP - potentially any quadrant except 4
+          USED - simply the sum of RES and SWAP
+          VIRT - everything in-use and/or reserved (all quadrants)
+
+       Note:  Even  though  program  images and shared libraries are considered private to a
+       process, they will be accounted for as shared (SHR) by the kernel.
+
 
 ## 备注
 
