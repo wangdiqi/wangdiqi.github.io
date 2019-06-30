@@ -3,7 +3,7 @@ layout: post
 title: "深入理解计算机系统"
 subtitle: "深入理解计算机系统"
 date: 2017-06-23 10:50:00
-author: "seventhking"
+author: "seventh"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:

@@ -1,14 +1,14 @@
 ---
 layout: post
-title: "Gradle"
-subtitle: "Gradle"
-date: 2017-08-24 09:50:00
+title: "C++"
+subtitle: "C++"
+date: 2017-12-18 09:50:00
 author: "seventh"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:
-    - Java
+    - C++
 ---
 
+> "Let's go"
 
-## 

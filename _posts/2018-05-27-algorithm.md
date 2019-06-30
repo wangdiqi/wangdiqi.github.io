@@ -3,7 +3,7 @@ layout: post
 title: "算法"
 subtitle: "常用算法"
 date: 2018-05-27 17:50:00
-author: "seventhking"
+author: "seventh"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:
@@ -225,6 +225,9 @@ void add(int element) {
 双向链表
 单链表回文
 LRU
+
+## 经典问题
+O(n) 在无序数组中找到第K大的数
 
 ## 堆排序
 

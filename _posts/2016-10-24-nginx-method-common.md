@@ -3,7 +3,7 @@ layout: post
 title: "Nginx 基本函数"
 subtitle: ""
 date: 2016-10-24 14:00:00
-author: seventhking
+author: seventh
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:
