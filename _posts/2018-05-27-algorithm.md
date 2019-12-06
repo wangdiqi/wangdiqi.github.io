@@ -3,7 +3,7 @@ layout: post
 title: "算法"
 subtitle: "常用算法"
 date: 2018-05-27 17:50:00
-author: "seventh"
+author: "Deetch"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:

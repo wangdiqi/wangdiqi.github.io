@@ -3,7 +3,7 @@ layout: post
 title: "openresty基本知识"
 subtitle: "openresty"
 date: 2018-11-01 17:00:00
-author: "seventh"
+author: "Deetch"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:

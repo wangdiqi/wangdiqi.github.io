@@ -3,7 +3,7 @@ layout: post
 title: "cmake学习"
 subtitle: "CMakeLists.txt 的编写"
 date: 2016-10-30 16:35:00
-author: "seventh"
+author: "Deetch"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:

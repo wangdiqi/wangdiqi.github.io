@@ -3,7 +3,7 @@ layout: post
 title: "docker学习"
 subtitle: "docker"
 date: 2019-02-13 15:29:00
-author: "seventh"
+author: "Deetch"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:

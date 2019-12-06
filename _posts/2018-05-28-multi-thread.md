@@ -3,7 +3,7 @@ layout: post
 title: "多线程服务器的常用实现"
 subtitle: "多线程"
 date: 2018-05-28 17:00:00
-author: "seventh"
+author: "Deetch"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:
