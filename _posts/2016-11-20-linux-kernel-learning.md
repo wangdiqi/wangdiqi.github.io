@@ -3,7 +3,7 @@ layout: post
 title: "Linux Kernel 学习"
 subtitle: "初步了解linux内核"
 date: 2016-11-20 09:50:00
-author: "seventh"
+author: "Deetch"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:

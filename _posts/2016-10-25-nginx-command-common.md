@@ -3,7 +3,7 @@ layout: post
 title: "Nginx 配置说明"
 subtitle: ""
 date: 2016-10-25 10:00:00
-author: seventh
+author: Deetch
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:

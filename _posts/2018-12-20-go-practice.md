@@ -3,7 +3,7 @@ layout: post
 title: "go"
 subtitle: "go"
 date: 2018-12-20 09:50:00
-author: "seventh"
+author: "Deetch"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:

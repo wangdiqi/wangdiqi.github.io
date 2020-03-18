@@ -3,7 +3,7 @@ layout: post
 title: "文件同步服务"
 subtitle: "文件同步"
 date: 2018-11-03 09:50:00
-author: "seventh"
+author: "Deetch"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:

@@ -3,7 +3,7 @@ layout: post
 title: "设计模式概览"
 subtitle: "设计模式"
 date: 2018-10-22 17:00:00
-author: "seventhking"
+author: "Deetch"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:

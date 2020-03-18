@@ -3,7 +3,7 @@ layout: post
 title: "profile工具"
 subtitle: "profile"
 date: 2019-02-14 15:29:00
-author: "seventh"
+author: "Deetch"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:

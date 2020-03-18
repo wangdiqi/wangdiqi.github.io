@@ -3,7 +3,7 @@ layout: post
 title: "计算机网络基本知识"
 subtitle: "一些基本概念"
 date: 2016-10-21 21:00:00
-author: "seventh"
+author: "Deetch"
 header-img: "img/home-bg-o.jpg"
 catalog: true
 tags:
