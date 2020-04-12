@@ -451,3 +451,18 @@ We can augment either BFS or DFS when we first discover a new vertex, color it o
 11) Path Finding We can either use Breadth First or Depth First Traversal to find if there is a path between two vertices.
 
 12) Finding all nodes within one connected component: We can either use Breadth First or Depth First Traversal to find all nodes reachable from a given node.
+
+
+### 算法技巧
+
+#### Sliding window
+
+#### 扫描线算法（图形学）
+
+#### 蓄水池算法，
+
+#### flood fill（图形学）
+
+#### KMP
+
+#### 马拉车等
