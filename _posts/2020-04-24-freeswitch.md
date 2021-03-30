@@ -70,6 +70,8 @@ sofia status profile internal user 1000
 
 列出网关状态
 sofia status gateway gw
+
+sofia global siptrace on
 ~~~
 
 
