@@ -110,6 +110,26 @@ MAC 地址是一个局域网内才有效的地址。因而，MAC 地址只要过
 
 #### UDP
 
+#### TCP
+
+~~~
+发送窗口:
+| 发送已确认 |  发送未确认  | 未发送可发送        | 未发送不可发送 |
+
+       LastByteAcked   LastByteSent        AdvertisedWindow
+~~~
+
+~~~
+接收窗口:
+| 接收已确认          | 等待接收未确认 |     不能接收       |
+
+LastByteRead     NextByteExpected              MaxRecvBuffer
+~~~
+
+
+## 应用层
+
+#### RTMP
 DHCP、VXLAN、QUIC
 
 使用场景：
@@ -135,25 +155,6 @@ QUIC(快速 UDP 互联网连接)
 5. 移动通信领域
 
 在 4G 网络里，移动流量上网的数据面对的协议 GTP-U 是基于 UDP 的。因为移动网络协议比较复杂，而 GTP 协议本身就包含复杂的手机上线下线的通信协议。如果基于 TCP，TCP 的机制就显得非常多余
-
-#### TCP
-
-~~~
-发送窗口:
-| 发送已确认 |  发送未确认  | 未发送可发送        | 未发送不可发送 |
-
-       LastByteAcked   LastByteSent        AdvertisedWindow
-~~~
-
-~~~
-接收窗口:
-| 接收已确认          | 等待接收未确认 |     不能接收       |
-
-LastByteRead     NextByteExpected              MaxRecvBuffer
-~~~
-
-
-## 应用层
 
 #### 流媒体协议
 
