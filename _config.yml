@@ -1,11 +1,11 @@
 # Site settings
-title: seventhking Blog
-SEOTitle: seventhking的博客 | seventhking Blog
+title: wangdiqi Blog
+SEOTitle: wangdiqi的博客 | wangdiqi Blog
 header-img: img/home-bg.jpg
 email: seventh_king@163.com
 description: "记录，查阅。"
 keyword: "服务端开发"
-url: "https://seventhking.github.io"              # your host, for absolute URL
+url: "https://wangdiqi.github.io"              # your host, for absolute URL
 baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
 
 
@@ -14,8 +14,8 @@ baseurl: ""                             # for example, '/blog' if your blog host
 RSS: false
 #weibo_username:
 #zhihu_username:
-github_username: seventhking
-twitter_username: seventhking
+github_username: wangdiqi
+twitter_username: wangdiqi
 #facebook_username:
 # linkedin_username:  firstname-lastname-idxxxx
 
@@ -52,7 +52,7 @@ kramdown:
 #disqus_username: _your_disqus_short_name_
 
 # Duoshuo settings
-duoshuo_username: seventhking
+duoshuo_username: wangdiqi
 # Share component is depend on Comment so we can NOT use share only.
 duoshuo_share: true                     # set to false if you want to use Comment without Sharing
 
@@ -65,7 +65,7 @@ duoshuo_share: true                     # set to false if you want to use Commen
 
 # Google Analytics
 ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
-ga_domain: https://seventhking.github.io
+ga_domain: https://wangdiqi.github.io
 
 
 
