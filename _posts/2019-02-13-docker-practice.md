@@ -20,10 +20,22 @@ cgexec 是 cgroup 提供的一个工具，可以在启动时就将程序运行�
 nsenter 是一个 namespace 相关的工具，通过它可以进入某个进程所在的 namespace
 
 
+## namespace
 
+隔离作用，所有的namespace：cgroup/ipc/network/mount/pid/time/user/uts
 
-## k8s
+~~~
+man namespaces
 
-kubectl get svc -n cloud | grep casr   //get port
-kubectl get pod -n cloud -o wide | grep casr     //get pyhisical machine
-ifconfig | egrep 10.   //get 
+具体看某个进程的namespace可以看
+/proc/33090/ns/ 下的文件
+~~~
+
+## cgroups
+
+~~~
+man cgroups
+
+具体看cgroup的配置
+/sys/fs/cgroup/memory/docker/
+~~~
